@@ -3,17 +3,14 @@
 
 (function() {
     'use strict';
-    // ここにあなたのユーザー名とパスワードを入力してください
-    const USERNAME = "T324036"; // あなたのユーザー名に書き換えてください
-    const PASSWORD = "ZjQY2g3F"; // あなたのパスワードに書き換えてください
-
+    
     /**
      * ログイン処理を実行します。
      */
-    function autoLogin() {
+    function autoLogin(username, password) {
         // エラーメッセージが表示されているか確認
-        // エラーメッセージはページ上のどこかに表示されると想定
-        if (document.querySelector(".c-message")!==null) {
+        if (document.querySelector(".c-message") !== null) {
+            console.log("ログインエラーメッセージが検出されたため、自動ログインを中断します。");
             return; // エラーがあれば処理を中断
         }
 
@@ -24,17 +21,25 @@
 
         // 必要な要素がすべて揃っているか確認
         if (usernameInput && passwordInput && loginButton) {
-
             // ユーザー名とパスワードを入力
-            usernameInput.value = USERNAME;
-            passwordInput.value = PASSWORD;
+            usernameInput.value = username;
+            passwordInput.value = password;
 
             // ログインボタンをクリック
             loginButton.click();
+        } else {
+            console.log("ログインフォームが見つかりませんでした。");
         }
     }
 
-    // ページの読み込みが完了したら実行
-    autoLogin();
+    // 拡張機能のストレージからIDとパスワードを取得して実行
+    chrome.storage.sync.get(['username', 'password'], (result) => {
+        if (result.username && result.password) {
+            // IDとパスワードが保存されている場合のみログイン処理を実行
+            autoLogin(result.username, result.password);
+        } else {
+            console.log("IDまたはパスワードが設定されていません。拡張機能アイコンから設定してください。");
+        }
+    });
 
 })();

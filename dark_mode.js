@@ -1,99 +1,59 @@
 (function() {
     'use strict';
 
-    let isButtonClickable = true;
+    // このスクリプトが動作しているフレームの現在のテーマ状態を保持する変数
+    let currentTheme = 'light';
 
-    const initializeDarkMode = () => {
-        try {
-            const existingButton = document.getElementById('dark-mode-toggle');
-            if (existingButton) {
-                existingButton.remove();
-            }
-            createToggleButton();
-            applyInitialTheme();
-        } catch (e) {
-            console.error('[ダークモード] 初期化処理中にエラーが発生しました:', e);
-        }
-    };
+    // テーマを適用するコア関数
+    function applyThemeToBody() {
+        if (!document.body) return; // bodyがなければ何もしない
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeDarkMode);
-    } else {
-        initializeDarkMode();
-    }
-
-    function applyInitialTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        updatePageTheme(savedTheme);
-        updateButtonText(savedTheme);
-    }
-
-    function updatePageTheme(theme) {
-        if (theme === 'dark') {
+        // 現在のbodyのクラス状態と、保持しているテーマ状態が違う場合のみクラスを操作
+        const isBodyDark = document.body.classList.contains('dark-mode');
+        if (currentTheme === 'dark' && !isBodyDark) {
             document.body.classList.add('dark-mode');
-        } else {
+        } else if (currentTheme === 'light' && isBodyDark) {
             document.body.classList.remove('dark-mode');
         }
     }
 
-    function updateButtonText(theme) {
-        const buttonText = document.getElementById('dark-mode-toggle-text');
-        if (!buttonText) return;
+    // --- メインロジック ---
 
-        if (theme === 'dark') {
-            buttonText.textContent = 'ライトモードに切替';
-        } else {
-            buttonText.textContent = 'ダークモードに切替';
-        }
-    }
-
-    function createToggleButton() {
-        const target = document.body;
-        if (!target) return;
-
-        const button = document.createElement('button');
-        button.id = 'dark-mode-toggle';
-        button.className = 'dmt-btn';
-
-        const spanLg = document.createElement('span');
-        spanLg.className = 'dmt-btn-lg';
-
-        const spanSl = document.createElement('span');
-        spanSl.className = 'dmt-btn-sl';
-
-        const spanText = document.createElement('span');
-        spanText.id = 'dark-mode-toggle-text';
-        spanText.className = 'dmt-btn-text';
-
-        spanLg.appendChild(spanSl);
-        spanLg.appendChild(spanText);
-        button.appendChild(spanLg);
-        target.appendChild(button);
-
-        button.addEventListener('click', () => {
-            if (!isButtonClickable) return;
-
-            isButtonClickable = false;
-            button.style.cursor = 'not-allowed';
-
-            const isDarkMode = document.body.classList.contains('dark-mode');
-            const newTheme = isDarkMode ? 'light' : 'dark';
-            
-            // 1. 即座にテーマを切り替え
-            updatePageTheme(newTheme);
-            localStorage.setItem('theme', newTheme);
-            
-            // 2. ボタンの文字を「切り替え完了」に変更
-            const buttonText = document.getElementById('dark-mode-toggle-text');
-            buttonText.textContent = '切り替え完了';
-
-            // 3. 1秒後に文字を元に戻し、ボタンを有効化
-            setTimeout(() => {
-                updateButtonText(newTheme);
-                isButtonClickable = true;
-                button.style.cursor = 'pointer';
-            }, 300); // 1秒 = 1000ミリ秒
+    // 1. 起動時にストレージから一度だけテーマを取得し、変数に保存して適用する
+    try {
+        chrome.storage.local.get('theme', (data) => {
+            // エラーチェック: chrome.runtime.lastErrorは、非同期APIのエラーを捕捉する
+            if (chrome.runtime.lastError) {
+                console.error(chrome.runtime.lastError.message);
+                return;
+            }
+            currentTheme = data.theme || 'light';
+            applyThemeToBody();
         });
+    } catch (e) {
+        // コンテキストが無効になった後の同期エラーを捕捉
+        console.warn('拡張機能のコンテキストが無効です。これは再読み込み時に発生することがあります。', e);
     }
+
+
+    // 2. MutationObserverでDOMの動的な変更を監視
+    //    API呼び出しをせず、保持しているテーマを再適用するだけなので軽量
+    const observer = new MutationObserver(() => {
+        applyThemeToBody();
+    });
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true,
+    });
+
+
+    // 3. ポップアップや他のフレームからの変更を監視
+    chrome.storage.onChanged.addListener((changes, namespace) => {
+        if (namespace === 'local' && changes.theme) {
+            // 新しいテーマを変数に保存し、適用する
+            currentTheme = changes.theme.newValue || 'light';
+            applyThemeToBody();
+        }
+    });
 
 })();

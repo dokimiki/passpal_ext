@@ -1,0 +1,127 @@
+:root {
+    --primary-color: #1877f2;
+    --primary-hover-color: #166fe5;
+    --success-color: #42b72a;
+
+    --bg-light: #f0f2f5;
+    --card-bg-light: #ffffff;
+    --text-light: #1c1e21;
+    --text-secondary-light: #606770;
+    --border-light: #dddfe2;
+    --input-bg-light: #ffffff;
+    --icon-fill-light: #606770;
+
+    --bg-dark: #18191a;
+    --card-bg-dark: #242526;
+    --text-dark: #e4e6eb;
+    --text-secondary-dark: #b0b3b8;
+    --border-dark: #3e4042;
+    --input-bg-dark: #3a3b3c;
+    --icon-fill-dark: #b0b3b8;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-light);
+    width: 300px;
+    margin: 0;
+    padding: 12px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* --- Dark Mode Styles --- */
+body.dark-mode { background-color: var(--bg-dark); color: var(--text-dark); }
+body.dark-mode .card { background-color: var(--card-bg-dark); border-color: var(--border-dark); }
+body.dark-mode .card-header, body.dark-mode h1 { color: var(--text-dark); }
+body.dark-mode input[type="text"], body.dark-mode input[type="password"] { background-color: var(--input-bg-dark); border-color: var(--border-dark); color: var(--text-dark); }
+body.dark-mode input::placeholder { color: var(--text-secondary-dark); }
+body.dark-mode .icon-btn svg { fill: var(--icon-fill-dark); }
+body.dark-mode .btn-secondary { background-color: #3a3b3c; color: var(--text-dark); }
+body.dark-mode .btn-secondary:hover { background-color: #4e4f50; }
+body.dark-mode .setting-label { color: var(--text-secondary-dark); }
+
+.container { display: flex; flex-direction: column; gap: 12px; }
+h1 { font-size: 18px; text-align: center; margin: 4px 0 8px; }
+.card { background-color: var(--card-bg-light); border-radius: 8px; padding: 16px; border: 1px solid var(--border-light); }
+.card-header { font-size: 15px; font-weight: 600; margin: -16px -16px 12px; padding: 12px 16px; border-bottom: 1px solid var(--border-light); }
+.form-group { margin-bottom: 12px; }
+.form-group:last-of-type { margin-bottom: 0; }
+.password-group { position: relative; }
+
+input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 14px; box-sizing: border-box; }
+input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color) 20%, transparent); }
+
+.icon-btn { position: absolute; top: 50%; right: 4px; transform: translateY(-50%); background: none; border: none; padding: 6px; cursor: pointer; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.icon-btn:hover { background-color: rgba(0, 0, 0, 0.05); }
+body.dark-mode .icon-btn:hover { background-color: rgba(255, 255, 255, 0.1); }
+.icon-btn svg { width: 20px; height: 20px; fill: var(--icon-fill-light); transition: fill 0.2s; }
+
+.btn { display: flex; align-items: center; justify-content: center; width: 100%; padding: 10px; border: none; border-radius: 6px; font-size: 14px; font-weight: bold; text-align: center; text-decoration: none; cursor: pointer; box-sizing: border-box; transition: background-color 0.2s; margin-top: 12px; }
+.btn-primary { background-color: var(--primary-color); color: white; }
+.btn-primary:hover { background-color: var(--primary-hover-color); }
+.btn-primary.saved { background-color: var(--success-color); }
+.btn-secondary { background-color: #e4e6eb; color: var(--text-light); }
+.btn-secondary:hover { background-color: #d8dadf; }
+
+.setting-item { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+.setting-label { font-size: 15px; font-weight: 500; }
+
+/* --- ★★★ ポップアップ専用ダークモードスイッチ ★★★ --- */
+/* (dark_mode.cssから必要なスタイルのみ抽出し、調整) */
+.dmt-btn {
+    /* 基本設定 */
+    appearance: none;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    user-select: none;
+    
+    /* 位置とサイズ (ポップアップ用に調整) */
+    position: relative; /* position:staticでも良いが、relativeが安全 */
+    width: 90px;
+    height: 36px;
+    border-radius: 18px;
+    overflow: hidden;
+
+    /* アニメーションと色 */
+    transition: box-shadow .5s ease-out;
+    background-color: #1E1E1E;
+    box-shadow: inset -90px 0 0 0 #FFFFFF;
+}
+
+/* テキスト表示用の擬似要素 */
+.dmt-btn::before,
+.dmt-btn::after {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+}
+.dmt-btn::before {
+    content: 'OFF';
+    left: 0;
+    color: #1E1E1E;
+}
+.dmt-btn::after {
+    content: 'ON';
+    right: 0;
+    color: #FFFFFF;
+}
+
+/* ポップアップがダークモードの時のスイッチの状態 */
+body.dark-mode .dmt-btn {
+    box-shadow: inset 0 0 0 0 #FFFFFF;
+}
+/* テキストカラーの調整は不要（JSでbodyのクラスを切り替えるため） */
+
+/* スイッチ内の子要素を非表示にする (安全のため) */
+.dmt-btn > * { 
+    display: none;
+}

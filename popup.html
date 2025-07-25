@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拡張機能設定</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>設定</h1>
+
+        <div class="card">
+            <h2 class="card-header">自動ログイン</h2>
+            <div class="form-group">
+                <input type="text" id="username" placeholder="ID（学籍番号） 例: T324000">
+            </div>
+            <div class="form-group password-group">
+                <input type="password" id="password" placeholder="パスワード">
+                <button id="toggle-password" class="icon-btn" title="パスワードを表示/非表示"></button>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <div class="setting-item">
+                <span class="setting-label">ダークモード</span>
+                <button id="dark-mode-toggle" class="dmt-btn" aria-label="ダークモードの切り替え"></button>
+            </div>
+        </div>
+
+        <div class="card">
+             <a href="https://prt-ap01.cst.chukyo-u.ac.jp/rgweb/webupload/ja?" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                Webプリントにアクセス
+            </a>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
